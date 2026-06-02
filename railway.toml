@@ -2,10 +2,6 @@
 builder = "dockerfile"
 
 [deploy]
-<<<<<<< HEAD
 startCommand = "/bin/sh -c 'uvicorn src.api:app --host 0.0.0.0 --port $PORT'"
-=======
-startCommand = "/bin/sh -c \"uvicorn src.api:app --host 0.0.0.0 --port $PORT\""
->>>>>>> 55527bf3dbdf199cb1adb2b02dc068e73c2e303a
 healthcheckPath = "/health"
 healthcheckTimeout = 60
