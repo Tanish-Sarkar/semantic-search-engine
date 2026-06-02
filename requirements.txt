@@ -1,0 +1,11 @@
+sentence-transformers
+psycopg2-binary
+pgvector
+fastapi
+uvicorn
+python-dotenv
+streamlit
+requests
+PyPDF2
+pandas
+python-multipart
