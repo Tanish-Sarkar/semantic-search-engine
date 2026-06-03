@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, Form
+from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from src.embedder import Embedded
@@ -12,7 +12,7 @@ load_dotenv()
 
 app = FastAPI(title="Semantic Search Engine")
 
-app.add_middleware(CORSMiddleware, allow_origin=["*"], allow_methods=["*"], allow_headers=["*"])
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 embedded = Embedded()
 reranker = Reranker()
@@ -27,21 +27,21 @@ class SearchRequest(BaseModel):
 async def ingest(files: list[UploadFile] = File(...)):
     results = []
     for file in files:
-        file_byte = await file.read()
+        file_bytes = await file.read()
         try:
-            chunks = parse_file(file.filename, file_byte)
+            chunks = parse_file(file.filename, file_bytes)
         except ValueError as e:
             results.append({"source": file.filename, "error": str(e)})
             continue
 
-        embedding = embedded.embed(chunks)
-        insert_documents_batch(conn, chunks, embedding, source=file.filename)   
+        embeddings = embedded.embed(chunks)
+        insert_documents_batch(conn, chunks, embeddings, source=file.filename)
         results.append({"source": file.filename, "ingested": len(chunks)})
 
     return {"files": results}
 
 @app.post("/search")
-def search(req:SearchRequest):
+def search(req: SearchRequest):
     t0 = time.time()
     query_embedding = embedded.embed([req.query])[0]
     raw_results = search_similar(conn, query_embedding, top_k=20)
@@ -53,8 +53,6 @@ def search(req:SearchRequest):
     reranked = reranker.rerank(req.query, candidates, top_k=req.top_k)
     rerank_ms = round((time.time() - t1) * 1000, 2)
 
-
-## This return structure is for "cross-encoder/ms-marco-MiniLM-L-6-v2" model
     return {
         "query": req.query,
         "results": [{"content": doc, "score": float(score)} for doc, score in reranked],

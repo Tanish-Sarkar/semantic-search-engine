@@ -9,30 +9,31 @@ def get_connection(dns: str):
 
 def create_table(conn):
     with conn.cursor() as cur:
-        cur.execute(" CREATE EXTENSION IF NOT EXSISTS vector")
+        cur.execute("CREATE EXTENSION IF NOT EXISTS vector")
         cur.execute("""
-            CREATE TABLE IF NOT EXISTS document(
-                    id SERIAL PRIMARY KEY,
-                    content TEXT NOT NULL,
-                    source TEXT,
-                    embedding vector(384)    
-                )
+            CREATE TABLE IF NOT EXISTS documents (
+                id SERIAL PRIMARY KEY,
+                content TEXT NOT NULL,
+                source TEXT,
+                embedding vector(384)
+            )
         """)
         cur.execute("""
-                    CREATE INDEX IF NOT EXSITS documents_embedding_idx
-                    ON documents USING ivfflat (embedding vector_cosine_ops)
-                    WITH (lists = 100)
-                    """)
+            CREATE INDEX IF NOT EXISTS documents_embedding_idx
+            ON documents USING ivfflat (embedding vector_cosine_ops)
+            WITH (lists = 100)
+        """)
     conn.commit()
 
 
-def inser_document_batch(conn, contents: list[str], embedding: np.ndarray, source: str = "upload"):
+def insert_documents_batch(conn, contents: list[str], embeddings: np.ndarray, source: str = "upload"):
     with conn.cursor() as cur:
-        for content, embedding in zip(contents, embedding):
+        for content, embedding in zip(contents, embeddings):
             cur.execute(
                 "INSERT INTO documents (content, source, embedding) VALUES (%s, %s, %s)",
                 (content, source, embedding)
             )
+    conn.commit()
 
 
 def search_similar(conn, query_embedding: np.ndarray, top_k: int = 20):
