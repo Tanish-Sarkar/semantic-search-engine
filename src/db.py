@@ -4,6 +4,8 @@ import numpy as np
 
 def get_connection(dns: str):
     conn = psycopg2.connect(dns)
+    with conn.cursor() as cur:
+        cur.execute("CREATE EXTENSION IF NOT EXISTS vector")
     register_vector(conn)
     return conn
 
