@@ -17,6 +17,10 @@ embedded = None
 reranker = None
 conn = None
 
+"""[lifespan] is an asynccontextmanager that wraps the entire app lifecycle. 
+Everything before yield runs on startup, everything after runs on shutdown. 
+It's the modern FastAPI way and has no deprecation warnings.
+"""
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global embedded, reranker, conn
