@@ -6,7 +6,9 @@ from src.reranker import Reranker
 from src.db import get_connection, create_table, insert_documents_batch, search_similar, get_doc_count
 from src.parser import parse_file
 from contextlib import asynccontextmanager
-import os, time, logging
+import os
+import time
+import logging
 from dotenv import load_dotenv
 
 load_dotenv()
