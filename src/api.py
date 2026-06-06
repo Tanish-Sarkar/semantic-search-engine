@@ -5,19 +5,47 @@ from src.embedder import Embedded
 from src.reranker import Reranker
 from src.db import get_connection, create_table, insert_documents_batch, search_similar, get_doc_count
 from src.parser import parse_file
-import os, time
+from contextlib import asynccontextmanager
+import os, time, logging
 from dotenv import load_dotenv
 
 load_dotenv()
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-app = FastAPI(title="Semantic Search Engine")
+embedded = None
+reranker = None
+conn = None
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global embedded, reranker, conn
+
+    db_url = os.getenv("DATABASE_URL")
+    if not db_url:
+        raise RuntimeError("DATABASE_URL environment variable is required")
+
+    logger.info("Loading embedding model...")
+    embedded = Embedded()
+
+    logger.info("Loading reranker model...")
+    reranker = Reranker()
+
+    logger.info("Connecting to database...")
+    conn = get_connection(db_url)
+    create_table(conn)
+    logger.info("Startup complete — API ready")
+
+    yield  # app runs here
+
+    # shutdown
+    if conn:
+        conn.close()
+    logger.info("Shutdown complete")
+
+app = FastAPI(title="Semantic Search Engine", lifespan=lifespan)
 
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
-
-embedded = Embedded()
-reranker = Reranker()
-conn = get_connection(os.getenv("DATABASE_URL"))
-create_table(conn)
 
 class SearchRequest(BaseModel):
     query: str
