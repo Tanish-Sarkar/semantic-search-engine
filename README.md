@@ -192,3 +192,22 @@ tests/test_search.py::test_search_top_k_respected     PASSED
 | API | Railway | Auto-deploys from `main` via Dockerfile |
 | Database | Supabase | PostgreSQL + pgvector extension |
 | Frontend | Streamlit Cloud | Auto-deploys from `main` |
+
+## Figures
+
+Below are the logic flow diagrams and application screenshots.
+
+### Logic flow diagrams
+<img src="figures/section1.png" alt="Section 1" width="400"/>
+<img src="figures/section2.png" alt="Section 2" width="400"/>
+<img src="figures/section3.png" alt="Section 3" width="400"/>
+<img src="figures/section4.png" alt="Section 4" width="400"/>
+<img src="figures/section5.png" alt="Section 5" width="400"/>
+<img src="figures/section6.png" alt="Section 6" width="400"/>
+<img src="figures/section7.png" alt="Section 7" width="400"/>
+<img src="figures/section8.png" alt="Section 8" width="400"/>
+<img src="figures/section9.png" alt="Section 9" width="400"/>
+
+### Application screenshots
+<img src="figures/app_page1.png" alt="App Page 1" width="400"/>
+<img src="figures/app_page2.png" alt="App Page 2" width="400"/>
